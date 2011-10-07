@@ -1,4 +1,4 @@
-#import "UIViewController+iconImage.h"
+#import "BCTabBar+UIViewController+iconImage.h"
 
 
 @implementation UIViewController (BCTabBarController)

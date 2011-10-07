@@ -1,5 +1,5 @@
-#import "UINavigationController+icons.h"
-#import "UIViewController+iconImage.h"
+#import "BCTabBar+UINavigationController+icons.h"
+#import "BCTabBar+UIViewController+iconImage.h"
 
 @implementation UINavigationController (BCTabBarController)
 

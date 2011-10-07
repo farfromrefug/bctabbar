@@ -6,10 +6,10 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
-#import "MyTabBarController.h"
+#import "BCTTTabBarController.h"
 #import "HeaderTabBarController.h"
 
-@implementation MyTabBarController
+@implementation BCTTTabBarController
 @synthesize surrogateParent;
 
 
@@ -93,7 +93,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    if (self.surrogateParent.headerVisible)
+    if (self.surrogateParent &&  self.surrogateParent.headerVisible)
     {
         self.surrogateParent.headerVisible = FALSE;
         [self.surrogateParent showHeader];

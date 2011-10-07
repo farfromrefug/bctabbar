@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "BCTabBarController.h"
 @class HeaderTabBarController;
-@interface MyTabBarController : BCTabBarController {
+@interface BCTTTabBarController : BCTabBarController {
     HeaderTabBarController* surrogateParent;
 }
 @property (nonatomic, assign) HeaderTabBarController *surrogateParent;
