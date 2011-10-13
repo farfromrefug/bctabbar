@@ -1,10 +1,11 @@
 #import "BCTabBarController.h"
 #import "BCTabBar.h"
 #import "BCTab.h"
-#import "UIViewController+iconImage.h"
+#import "BCTabBar+UIViewController+iconImage.h"
 #import "BCTabBarView.h"
 
 #define kUINavigationControllerPushPopAnimationDuration     0.35
+#define kTabBarHeight     50
 
 @interface BCTabBarController ()
 
@@ -16,15 +17,100 @@
 
 
 @implementation BCTabBarController
-@synthesize viewControllers, tabBar, selectedTab, selectedViewController, tabBarView;
+@synthesize viewControllers, viewURLs, tabBar, selectedTab, selectedViewController, tabBarView;
+@synthesize surrogateParent;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (UIViewController*)rootControllerForController:(UIViewController*)controller 
+{
+	if ([controller canContainControllers]) {
+		return controller;
+		
+	} else {
+		TTNavigationController* navController = [[[TTNavigationController alloc] init] autorelease];
+		[navController pushViewController:controller animated:NO];
+		return navController;
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (BOOL)canContainControllers {
+	return YES;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (UIViewController*)topSubcontroller {
+	return self.selectedViewController;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)addSubcontroller:(UIViewController*)controller animated:(BOOL)animated
+transition:(UIViewAnimationTransition)transition {
+	self.selectedViewController = controller;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)bringControllerToFront:(UIViewController*)controller animated:(BOOL)animated {
+	self.selectedViewController = controller;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (NSString*)keyForSubcontroller:(UIViewController*)controller {
+	return nil;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (UIViewController*)subcontrollerForKey:(NSString*)key {
+	return nil;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)persistNavigationPath:(NSMutableArray*)path {
+	UIViewController* controller = self.selectedViewController;
+	[[TTNavigator navigator] persistController:controller path:path];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+#pragma mark Public
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)setTabURLs:(NSArray*)URLs {
+	NSMutableArray* controllers = [NSMutableArray array];
+	NSMutableArray* viewURLS = [NSMutableArray array];
+	for (NSString* URL in URLs) {
+		UIViewController* controller = [[TTNavigator navigator] viewControllerForURL:URL];
+		if (controller) {
+			UIViewController* tabController = [self rootControllerForController:controller];
+			[tabController setSuperController:self];
+			[controllers addObject:tabController];
+			[viewURLS addObject:URL];
+            
+		}
+	}
+    self.viewURLs = viewURLS;
+	self.viewControllers = controllers;
+}
 
 - (void)loadView {
 	self.tabBarView = [[[BCTabBarView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]] autorelease];
 	self.view = self.tabBarView;
 	self.view.backgroundColor = [UIColor clearColor];
 
-	self.tabBar = [[[BCTabBar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 44, 
-															  self.view.frame.size.width, 44)]
+	self.tabBar = [[[BCTabBar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height 
+                                                              - kTabBarHeight, 
+															  self.view.frame.size.width
+                                                              , kTabBarHeight)]
 				   autorelease];
 	self.tabBar.delegate = self;
 	
@@ -38,15 +124,17 @@
 
 - (void)tabBar:(BCTabBar *)aTabBar didSelectTabAtIndex:(NSInteger)index {
 	UIViewController *vc = [self.viewControllers objectAtIndex:index];
-	if (self.selectedViewController == vc) {
-		if ([[self.selectedViewController class] isSubclassOfClass:[UINavigationController class]]) {
-			[(UINavigationController *)self.selectedViewController popViewControllerAnimated:YES];
-//			[[[self topSubcontroller] topSubcontroller].navigationController popViewControllerAnimated:YES];
-		}
-	} else {
-		self.selectedViewController = vc;
-	}
-	
+//	if (self.selectedViewController == vc) {
+//		if ([[self.selectedViewController class] isSubclassOfClass:[UINavigationController class]]) {
+//			[(UINavigationController *)self.selectedViewController popViewControllerAnimated:YES];
+////			[[[self topSubcontroller] topSubcontroller].navigationController popViewControllerAnimated:YES];
+//		}
+//	} else {
+//		self.selectedViewController = vc;
+//	}
+//	
+    self.selectedViewController = vc;
+    TTOpenURL([self.viewURLs objectAtIndex:index]);
 }
 
 - (void)setSelectedViewController:(UIViewController *)vc {
@@ -73,23 +161,27 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+	[self.surrogateParent viewWillAppear:animated];
     [self.selectedViewController view];  // let the view load itself, in case the view is didUnload
 	[self.selectedViewController viewWillAppear:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	[self.surrogateParent viewDidAppear:animated];
 	[self.selectedViewController viewDidAppear:animated];
 	visible = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
+	[self.surrogateParent viewWillDisappear:animated];
 	[self.selectedViewController viewWillDisappear:animated];	
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
+	[self.surrogateParent viewDidDisappear:animated];
 	[self.selectedViewController viewDidDisappear:animated];
 	visible = NO;
 }
@@ -107,19 +199,24 @@
 
 - (void)loadTabs {
 	NSMutableArray *tabs = [NSMutableArray arrayWithCapacity:self.viewControllers.count];
-	for (UIViewController *vc in self.viewControllers) {
+    
+    int i = 0;
+    for (UIViewController *vc in self.viewControllers) {
+        NSString *url = [self.viewURLs objectAtIndex:i];
         if ([[vc class] isSubclassOfClass:[UINavigationController class]]) {
             ((UINavigationController *)vc).delegate = self;
         }
 
 		BCTab* button = [[[BCTab alloc] 
-						  initWithIconImageName:[vc iconImageName] 
+						  initWithIconImageName:[vc iconImageNameForURL:url] 
 						  selectedImageNameSuffix:[vc selectedIconImageNameSuffix] 
 						  landscapeImageNameSuffix:[vc landscapeIconImageNameSuffix]
-						 title:[vc iconTitle]]
+						 title:[vc iconTitleForURL:url]]
 						 autorelease];
-		[vc setTabBarButton:button];
+        button.imageView.contentMode = [vc imageContentModeForURL:[self.viewURLs objectAtIndex:i]];
+		[vc setTabBarButton:button forURL:url];
         [tabs addObject:button];
+        i++;
 	}
 
 	self.tabBar.tabs = tabs;

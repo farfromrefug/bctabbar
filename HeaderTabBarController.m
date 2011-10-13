@@ -1,9 +1,6 @@
 #import "HeaderTabBarController.h"
-#import "AppDelegate.h"
 #import "StyleSheet.h"
 #import "ConnectionActivityLabel.h"
-#import "LibraryUpdater.h"
-
 
 @implementation HeaderTabBarController
 @synthesize headerVisible = _headerVisible;
@@ -89,7 +86,7 @@
 //    backgroundView.frame = self.view.frame;
 //    [self.view addSubview:backgroundView];
 	
-    _tabBarController = [[MyTabBarController alloc] init];
+    _tabBarController = [[BCTTTabBarController alloc] init];
     _tabBarController.view.frame = self.view.frame;
 	[self setTabURLs:[NSArray arrayWithObjects:@"tt://gesture",
                       @"tt://library/movies/1",
@@ -109,7 +106,7 @@
     _connectionlabel = [[ConnectionActivityLabel alloc] init];
     
     [_connectionlabel sizeToFit];
-    const CGFloat headerViewHeight = TTSTYLEVAR(headerViewHeight);
+    const CGFloat headerViewHeight = TTSTYLEVAR(connectionBarViewHeight);
     _connectionlabel.frame = CGRectMake(0, 0, self.view.width, headerViewHeight);
     
     _connectionlabel.userInteractionEnabled = NO;
@@ -240,10 +237,10 @@
         [UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
     }
     _tabBarController.view.frame = CGRectMake(0, 
-                                              TTSTYLEVAR(headerViewHeight)
+                                              TTSTYLEVAR(connectionBarViewHeight)
                                               , self.view.width
                                               , self.view.height 
-                                              - TTSTYLEVAR(headerViewHeight));
+                                              - TTSTYLEVAR(connectionBarViewHeight));
     if (animated) {
         [UIView commitAnimations];
     }

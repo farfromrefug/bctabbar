@@ -3,24 +3,31 @@
 
 @implementation UIViewController (BCTabBarController)
 
-- (NSString *)iconTitle {
+- (NSString *)iconTitleForURL:(NSString *) url {
 	return @"";
 }
 
-- (NSString *)iconImageName {
-	return nil;
+
+- (NSString *)iconImageNameForURL:(NSString *) url {
+	return @"";
 }
 
 - (NSString *)selectedIconImageNameSuffix {
-	return nil;
+	return @"";
 }
 
 - (NSString *)landscapeIconImageNameSuffix {
-	return nil;
+	return @"";
 }
 
-- (void)setTabBarButton:(BCTab*) tabBarButton
+- (void)setTabBarButton:(BCTab*) tabBarButton forURL:(NSString *) url
 {
 	
 }
+
+- (UIViewContentMode)imageContentModeForURL:(NSString *) url
+{
+    return UIViewContentModeScaleAspectFit;
+}
+
 @end

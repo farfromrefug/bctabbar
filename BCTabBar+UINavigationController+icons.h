@@ -3,9 +3,12 @@
 @class BCTab;
 @interface UINavigationController (BCTabBarController)
 
-- (NSString *)iconTitle;
-- (NSString *)iconImageName;
+- (NSString *)iconTitleForURL:(NSString *) url;
+- (NSString *)iconImageNameForURL:(NSString *) url;
+
 - (NSString *)selectedIconImageNameSuffix;
 - (NSString *)landscapeIconImageNameSuffix;
-- (void)setTabBarButton:(BCTab*) tabBarButton;
+
+- (void)setTabBarButton:(BCTab*) tabBarButton forURL:(NSString *) url;
+- (UIViewContentMode)imageContentModeForURL:(NSString *) url;
 @end

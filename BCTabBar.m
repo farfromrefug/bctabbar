@@ -17,11 +17,11 @@
 	return self;
 }
 - (void)drawRect:(CGRect)rect {
-	CGContextRef c = UIGraphicsGetCurrentContext();
-	[TTSTYLEVAR(tabBarHighlightedColor) set];
-	CGContextFillRect(c, CGRectMake(0, 0, self.bounds.size.width, 2));
-	CGContextFillRect(c, CGRectMake(10, self.bounds.size.height - 2
-									, self.bounds.size.width - 20, 2));
+//	CGContextRef c = UIGraphicsGetCurrentContext();
+//	[TTSTYLEVAR(tabBarHighlightedColor) set];
+//	CGContextFillRect(c, CGRectMake(0, 0, self.bounds.size.width, 2));
+//	CGContextFillRect(c, CGRectMake(10, self.bounds.size.height - 2
+//									, self.bounds.size.width - 20, 2));
 }
 @end
 
@@ -33,7 +33,7 @@
 
 	if ((self = [super initWithFrame:aFrame])) {
 		self.backgroundColor = [UIColor clearColor];
-//		self.backgroundImage = [UIImage imageNamed:@"BCTabBarController.bundle/tab-bar-background.png"];
+		self.backgroundImage = [UIImage imageNamed:@"BCTabBarController.bundle/tab-bar-background.png"];
 		self.arrow = [[[BCTabBarArrow alloc] init] autorelease];
 //		CGRect r = self.arrow.frame;
 //		r.origin.y = - (r.size.height - 2);
@@ -50,15 +50,13 @@
 
 - (void)drawRect:(CGRect)rect {
 	[super drawRect:rect];
-	CGContextRef context = UIGraphicsGetCurrentContext();
-//	[self.backgroundImage drawAtPoint:CGPointMake(0, 0)];
-	[TTSTYLEVAR(tabBarBackColor) set];
-//	CGContextFillRect(context, CGRectMake(0, self.bounds.size.height / 2, self.bounds.size.width, self.bounds.size.height / 2));
-	
-	CGContextFillRect(context, CGRectMake(0, 2, self.bounds.size.width, self.bounds.size.height - 2));
-	
-	[TTSTYLEVAR(tabBarBorderColor) set];
-	CGContextFillRect(context, CGRectMake(0, 0, self.bounds.size.width, 2));
+//	CGContextRef context = UIGraphicsGetCurrentContext();
+//	[TTSTYLEVAR(tabBarBackColor) set];
+//	
+//	CGContextFillRect(context, CGRectMake(0, 2, self.bounds.size.width, self.bounds.size.height - 2));	
+//	[TTSTYLEVAR(tabBarBorderColor) set];
+//	CGContextFillRect(context, CGRectMake(0, 0, self.bounds.size.width, 2));
+	[self.backgroundImage drawInRect:self.bounds];
 }
 
 - (void)setTabs:(NSArray *)array {
@@ -72,6 +70,7 @@
 	for (BCTab *tab in tabs) {
 		tab.userInteractionEnabled = YES;
 		[tab addTarget:self action:@selector(tabSelected:) forControlEvents:UIControlEventTouchDown];
+		[self insertSubview:tab belowSubview:self.arrow];
 	}
 	[self setNeedsLayout];
 }
@@ -126,7 +125,6 @@
 		f.origin.x += kTabMargin;
 		tab.frame = f;
 		f.origin.x += f.size.width;
-		[self insertSubview:tab belowSubview:self.arrow];
 	}
 	
 	[self positionArrowAnimated:NO];
