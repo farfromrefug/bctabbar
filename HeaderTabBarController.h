@@ -1,12 +1,12 @@
 #import <Three20/Three20.h>
-#import "BCTTTabBarController.h"
+#import "BCTabBarController.h"
 //#import "CustomTabBarViewController.h"
 
 @class ConnectionActivityLabel;
 @interface HeaderTabBarController : UIViewController {
     ConnectionActivityLabel* _connectionlabel;
     
-    BCTTTabBarController* _tabBarController;
+    BCTabBarController* _tabBarController;
 //    CustomTabBarViewController* _tabBarController;
     
     BOOL _headerVisible;

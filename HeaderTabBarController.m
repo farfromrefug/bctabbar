@@ -74,34 +74,11 @@
 // UIViewController
 
 - (void)viewDidLoad {
-
-//    [self.view setBackgroundColor:[UIColor grayColor]];
-	//create new uiview with a background image
-//    UIImage *backgroundImage = TTIMAGE(@"bundle://background.png");
-//    UIImageView *backgroundView = [[[UIImageView alloc] 
-//									initWithImage:backgroundImage] autorelease];
-//	backgroundView.contentMode = UIViewContentModeScaleToFill;
-//	backgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth | 
-//										UIViewAutoresizingFlexibleHeight;
-//    backgroundView.frame = self.view.frame;
-//    [self.view addSubview:backgroundView];
 	
-    _tabBarController = [[BCTTTabBarController alloc] init];
+    _tabBarController = [[BCTabBarController alloc] init];
     _tabBarController.view.frame = self.view.frame;
-	[self setTabURLs:[NSArray arrayWithObjects:@"tt://gesture",
-                      @"tt://library/movies/1",
-                      @"tt://library/tvshows/1",
-                      @"tt://videos",
-                      @"tt://settings",
-                      nil]];
-//    _tabBarController = [[CustomTabBarViewController alloc] init];
     _tabBarController.surrogateParent  = self;
     [self.view addSubview:_tabBarController.view];
-    
-//    UIImageView* background = [[[UIImageView alloc] initWithImage:TTIMAGE(@"bundle://tabbar.png")] autorelease];
-//    background.frame = CGRectMake(0, 0, 320, 52);
-//    background.contentMode = UIViewContentModeScaleToFill;
-//    [_tabBarController.tabBar insertSubview:background atIndex:0];
     
     _connectionlabel = [[ConnectionActivityLabel alloc] init];
     
@@ -148,37 +125,6 @@
 //	
 //	
 //	[self.view addSubview:remoteButton];
-    
-    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    [center
-     addObserver:self
-     selector:@selector(hostChanged:)
-     name:@"hostChanged"
-     object:nil ];
-    
-    [center
-     addObserver:self
-     selector:@selector(disconnectedFromXBMC:)
-     name:@"DisconnectedFromXBMC"
-     object:nil ];
-    
-    [center
-     addObserver:self
-     selector:@selector(connectedToXBMC:)
-     name:@"ConnectedToXBMC"
-     object:nil ];
- 
-    [center
-     addObserver:self
-     selector:@selector(libraryUpdateStarted:)
-     name:@"updatingLibrary"
-     object:nil ];
-    
-    [center
-     addObserver:self
-     selector:@selector(libraryUpdateFinished:)
-     name:@"updatedLibrary"
-     object:nil ];
     
     if (self.navigationController) { 
         self.navigationController.navigationBar.tintColor = 
